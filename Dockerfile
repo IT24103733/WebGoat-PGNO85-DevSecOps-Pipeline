@@ -1,4 +1,11 @@
 # We need JDK as some of the lessons needs to be able to compile Java code
+FROM docker.io/eclipse-temurin:25-jdk-noble AS build
+
+WORKDIR /workspace
+COPY . .
+ARG MAVEN_ARGS="-DskipTests package"
+RUN sed -i 's/\r$//' mvnw && sh ./mvnw -B ${MAVEN_ARGS}
+
 FROM docker.io/eclipse-temurin:25-jdk-noble
 
 LABEL name="WebGoat: A deliberately insecure Web Application"
@@ -11,7 +18,7 @@ RUN \
 
 USER webgoat
 
-COPY --chown=webgoat target/webgoat-*.jar /home/webgoat/webgoat.jar
+COPY --from=build --chown=webgoat /workspace/target/webgoat-*.jar /home/webgoat/webgoat.jar
 
 EXPOSE 8080
 EXPOSE 9090
@@ -37,4 +44,4 @@ ENTRYPOINT [ "java", \
    "-jar", "webgoat.jar", "--server.address=0.0.0.0" ]
 
 HEALTHCHECK --interval=5s --timeout=3s \
-  CMD curl --fail http://localhost:8080/WebGoat/actuator/health || exit 1
+  CMD bash -c '</dev/tcp/localhost/8080' || exit 1

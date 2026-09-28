@@ -1,4 +1,13 @@
 **
 
+!/pom.xml
+!/mvnw
+!/.mvn
+!/.mvn/**
+!/src
+!/src/**
 !/target
+!/target/**
+!/config
 !/config/desktop
+!/config/desktop/**
