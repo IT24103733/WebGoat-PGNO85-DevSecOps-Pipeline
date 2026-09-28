@@ -1,0 +1,47 @@
+name: PGNO 85 DevSecOps CI/CD Pipeline
+
+
+on:
+  push:
+    branched: [ "main", "Core-Pipeline-**"]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-scan:
+    name: Container Builder and Scanner
+    runs-on: ubuntu-latest
+
+
+    steps:
+# 1 Pulling the code form the repository
+      -name: Checkout Code
+       uses: actions/checkout@v4
+# 2 Setting up the java backend environment
+      -name: Setup JDK VErsion
+       uses: actions/setup-java@v4
+       with:
+         java-version: '25'
+         distribution: 'temurin'
+
+# 3 Compiling the webgoat application
+      -name: Build WebGoat
+        run: ./mvnq clean package -DskipTests
+
+# 4 Building the docker image
+      -name: Build Docker image
+      run: docker build -t webgoat-local:latest .
+
+# 5. Trivy container scanning
+
+      -name: Run Trivy
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'webgoat-local:latest'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+
+
