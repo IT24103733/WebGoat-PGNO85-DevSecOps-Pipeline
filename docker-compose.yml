@@ -1,0 +1,9 @@
+version: '3'
+services:
+  webgoat:
+    image: webgoat/webgoat:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - WEBWOLF_HOST=localhost
+      - WEBWOLF_PORT=9090
