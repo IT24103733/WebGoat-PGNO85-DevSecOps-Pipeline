@@ -3,11 +3,11 @@ name: PGNO 85 DevSecOps CI/CD Pipeline
 on:
   push:
     branches:
-      -main
-      -"Core-Pipeline-**"
-    pull-request:
-      branches:
-        -main
+      - main
+      - "Core-Pipeline-**"
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build-and-scan:
