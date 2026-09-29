@@ -49,6 +49,15 @@ public class ProfileUploadBase implements AssignmentEndpoint {
 
     try {
       var uploadedFile = new File(uploadDirectory, fullName);
+      
+      // FIX: Core Canonical Path Validation to prevent Path Traversal
+      String uploadDirCanonical = uploadDirectory.getCanonicalPath() + File.separator;
+      String uploadedFileCanonical = uploadedFile.getCanonicalPath();
+      
+      if (!uploadedFileCanonical.startsWith(uploadDirCanonical)) {
+          return failed(this).output("Security Exception: Path Traversal Attempt Detected!").build();
+      }
+
       uploadedFile.createNewFile();
       FileCopyUtils.copy(file.getBytes(), uploadedFile);
 

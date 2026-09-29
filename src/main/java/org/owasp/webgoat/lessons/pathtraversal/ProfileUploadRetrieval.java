@@ -90,15 +90,21 @@ public class ProfileUploadRetrieval implements AssignmentEndpoint {
   @GetMapping("/PathTraversal/random-picture")
   @ResponseBody
   public ResponseEntity<?> getProfilePicture(HttpServletRequest request) {
-    var queryParams = request.getQueryString();
-    if (queryParams != null && (queryParams.contains("..") || queryParams.contains("/"))) {
-      return ResponseEntity.badRequest()
-          .body("Illegal characters are not allowed in the query params");
-    }
     try {
       var id = request.getParameter("id");
+      
+      // FIX: Check the actual decoded parameter instead of the raw query string which can bypass checks via URL-encoding
+      if (id != null && (id.contains("..") || id.contains("/"))) {
+          return ResponseEntity.badRequest().body("Illegal characters are not allowed in the query params");
+      }
+      
       var catPicture =
           new File(catPicturesDirectory, (id == null ? RandomUtils.nextInt(1, 11) : id) + ".jpg");
+
+      // FIX: Enforce canonical path boundaries to prevent traversal
+      if (!catPicture.getCanonicalPath().startsWith(catPicturesDirectory.getCanonicalPath())) {
+          return ResponseEntity.badRequest().body("Path traversal attempt blocked");
+      }
 
       if (catPicture.getName().toLowerCase().contains("path-traversal-secret.jpg")) {
         return ResponseEntity.ok()

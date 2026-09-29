@@ -77,8 +77,17 @@ public class ProfileZipSlip extends ProfileUploadBase {
       while (entries.hasMoreElements()) {
         ZipEntry e = entries.nextElement();
         File f = new File(tmpZipDirectory.toFile(), e.getName());
-        InputStream is = zip.getInputStream(e);
-        Files.copy(is, f.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        
+        // FIX: Prevent Zip Slip by ensuring the extracted file path stays within the intended directory
+        if (!f.getCanonicalPath().startsWith(tmpZipDirectory.toFile().getCanonicalPath())) {
+            throw new SecurityException("Zip Slip Vulnerability Detected!");
+        }
+        
+        if (!e.isDirectory()) {
+            f.getParentFile().mkdirs();
+            InputStream is = zip.getInputStream(e);
+            Files.copy(is, f.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
       }
 
       return isSolved(currentImage, getProfilePictureAsBase64(username));
