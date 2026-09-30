@@ -8,6 +8,10 @@ ci:
   skip: []
   submodules: false
 repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
@@ -26,8 +30,3 @@ repos:
       - id: maven
         args: [ 'clean compile' ]
       - id: maven-spotless-apply
-
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.18.2
-    hooks:
-      - id: gitleaks
