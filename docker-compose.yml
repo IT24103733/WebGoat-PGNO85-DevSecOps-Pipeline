@@ -13,6 +13,7 @@ services:
       - WEBWOLF_HOST=0.0.0.0
       - WEBGOAT_PORT=8080
       - WEBWOLF_PORT=9090
+      - JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true
     networks:
       - app-network
 
