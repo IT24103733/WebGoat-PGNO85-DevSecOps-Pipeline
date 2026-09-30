@@ -3,9 +3,9 @@ name: PGNO 85 DevSecOps CI/CD Pipeline
 on:
   push:
     branches:
-      -main
-      -"Core-Pipeline-**"
-    pull-request:
+      - main
+      - "Core-Pipeline-**"
+    pull_request:
       branches:
         -main
 
@@ -40,7 +40,7 @@ jobs:
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
-          
+
       - name: IaC Security Scanning with Checkov
         uses: bridgecrewio/checkov-action@master
         with:
