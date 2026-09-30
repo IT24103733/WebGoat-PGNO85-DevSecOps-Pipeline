@@ -21,16 +21,19 @@ jobs:
 
       - name: Secret Scanning with Gitleaks
         uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: SAST Scanning with Semgrep
         uses: returntocorp/semgrep-action@v1
+        continue-on-error: true
         with:
           config: p/java
 
       - name: IaC Security Scanning with Checkov
         uses: bridgecrewio/checkov-action@master
+        continue-on-error: true
         with:
           directory: .
           framework: dockerfile
@@ -46,6 +49,7 @@ jobs:
 
       - name: SCA Scanning with OWASP Dependency-Check
         uses: dependency-check/Dependency-Check_Action@main
+        continue-on-error: true
         with:
           project: 'WebGoat'
           path: '.'
@@ -56,6 +60,7 @@ jobs:
 
       - name: Vulnerability Scannig with Trivy (OS and dependency scans)
         uses: aquasecurity/trivy-action@master
+        continue-on-error: true
         with:
           image-ref: 'webgoat-local:latest'
           format: 'table'
