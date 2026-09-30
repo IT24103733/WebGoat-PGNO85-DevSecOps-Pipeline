@@ -5,9 +5,9 @@ on:
     branches:
       - main
       - "Core-Pipeline-**"
-    pull_request:
+  pull_request:
       branches:
-        -main
+      - main
 
 jobs:
   build-and-scan:
