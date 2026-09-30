@@ -1,0 +1,48 @@
+name: PGNO 85 DevSecOps CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - "Core-Pipeline-**"
+  pull_request:
+      branches:
+      - main
+
+jobs:
+  build-and-scan:
+    name: Build the container and scan
+    runs-on: ubuntu-latest
+
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 25 For WebGoat
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+
+      - name: Build WebGoat
+        run: ./mvnw clean package -DskipTests
+
+      - name: Building the docker image
+        run: docker build -t webgoat-local:latest .
+
+      - name: Vulnerability Scannig with Trivy (OS and dependency scans)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'webgoat-local:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: IaC Security Scanning with Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: dockerfile          
